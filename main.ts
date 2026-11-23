@@ -135,8 +135,11 @@ await runBars({
     const m45 = mean45();
     const l10 = low10();
     const r240Bps = (close * 10000n) / closes[i - REGIME_N] - 10000n;
+    // Washout: close >= 55 bps below the 45-bar mean (cross-multiplied
+    // to stay in integers: close * 10000 <= mean45 * 9945) and >= 20 bps
+    // recovered off the prior 10-bar low, in a non-freefall regime.
     if (
-      close * 10000n <= (m45 * (10000n - WASH_BELOW_MEAN_BPS)) / 1n &&
+      close * 10000n <= m45 * (10000n - WASH_BELOW_MEAN_BPS) &&
       close * 10000n >= l10 * (10000n + WASH_RECOVER_BPS) &&
       r240Bps >= WASH_REGIME_MIN_BPS
     ) {
